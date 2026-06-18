@@ -50,6 +50,10 @@ services:
       - "traefik.http.routers.manager.rule=Host(`manager.casperico.com`)"
       - "traefik.http.routers.manager.entrypoints=web"
       - "traefik.http.services.manager.loadbalancer.server.port=80"
+      
+      # Interceptar llamadas a la API desde el dominio del player
+      - "traefik.http.routers.manager-api.rule=Host(`monitor.casperico.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.manager-api.entrypoints=web"
 
   # =================================================================
   # 3. Player (Nginx PWA)

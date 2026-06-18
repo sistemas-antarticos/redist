@@ -26,7 +26,7 @@ services:
   # 2. Manager (Laravel / Apache)
   # =================================================================
   app:
-    image: ghcr.io/sistemas-antarticos/manager:1.0.3
+    image: ghcr.io/sistemas-antarticos/manager:1.0.4
     container_name: laravel_app
     restart: always
     volumes:
@@ -61,7 +61,7 @@ services:
   # 3. Player (Nginx PWA)
   # =================================================================
   player:
-    image: ghcr.io/sistemas-antarticos/player:1.0.3
+    image: ghcr.io/sistemas-antarticos/player:1.0.5
     container_name: nginx_player
     restart: always
     networks:

@@ -54,6 +54,7 @@ services:
       # Interceptar llamadas a la API desde el dominio del player
       - "traefik.http.routers.manager-api.rule=Host(`monitor.casperico.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.manager-api.entrypoints=web"
+      - "traefik.http.routers.manager-api.service=manager"
 
   # =================================================================
   # 3. Player (Nginx PWA)

@@ -10,14 +10,14 @@ services:
     restart: always
     command:
       - "--api.insecure=true"
-      - "--providers.file.directory=/etc/traefik/rules"
-      - "--providers.file.watch=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"        
       - "8082:8080"    
     volumes:
-      - ./traefik/rules:/etc/traefik/rules  
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - sistema-network
 
@@ -45,6 +45,11 @@ services:
       - db
     networks:
       - sistema-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manager.rule=Host(`manager.casperico.com`)"
+      - "traefik.http.routers.manager.entrypoints=web"
+      - "traefik.http.services.manager.loadbalancer.server.port=80"
 
   # =================================================================
   # 3. Player (Nginx PWA)
@@ -55,6 +60,11 @@ services:
     restart: always
     networks:
       - sistema-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.player.rule=Host(`monitor.casperico.com`)"
+      - "traefik.http.routers.player.entrypoints=web"
+      - "traefik.http.services.player.loadbalancer.server.port=80"
 
   # =================================================================
   # 4. Database (Postgres)

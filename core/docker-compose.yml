@@ -5,7 +5,7 @@ services:
   # 1. Reverse Proxy (Traefik)
   # =================================================================
   traefik:
-    image: traefik:v3.0
+    image: traefik:v2.11
     container_name: traefik_router
     restart: always
     command:
@@ -17,7 +17,7 @@ services:
       - "80:80"        
       - "8082:8080"    
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - sistema-network
 

@@ -22,30 +22,10 @@ services:
       - sistema-network
 
   # =================================================================
-  # 2. DNS Server (Technitium)
-  # =================================================================
-  dns-server:
-    image: technitium/dns-server:latest
-    container_name: technitium_dns
-    hostname: dns-server
-    restart: always
-    ports:
-      - "53:53/udp"      
-      - "53:53/tcp"      
-      - "5380:5380/tcp"  
-    volumes:
-      - ./dns-config:/etc/dns
-      - ./dns-logs:/var/log/technitium/dns
-    environment:
-      - DNS_SERVER_DOMAIN=dns-server
-    networks:
-      - sistema-network
-
-  # =================================================================
-  # 3. Manager (Laravel / Apache)
+  # 2. Manager (Laravel / Apache)
   # =================================================================
   app:
-    image: ghcr.io/sistemas-antarticos/manager:latest
+    image: ghcr.io/sistemas-antarticos/manager:${APP_VERSION:-latest}
     container_name: laravel_app
     restart: always
     volumes:
@@ -67,17 +47,17 @@ services:
       - sistema-network
 
   # =================================================================
-  # 4. Player (Nginx PWA)
+  # 3. Player (Nginx PWA)
   # =================================================================
   player:
-    image: ghcr.io/sistemas-antarticos/player:latest
+    image: ghcr.io/sistemas-antarticos/player:${APP_VERSION:-latest}
     container_name: nginx_player
     restart: always
     networks:
       - sistema-network
 
   # =================================================================
-  # 5. Database (Postgres)
+  # 4. Database (Postgres)
   # =================================================================
   db:
     image: postgres:16
@@ -95,20 +75,7 @@ services:
       - sistema-network
 
   # =================================================================
-  # 6. Portainer
-  # =================================================================
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - sistema-network
-
-  # =================================================================
-  # 7. Cloudflared (Túnel)
+  # 5. Cloudflared (Túnel - Opcional)
   # =================================================================
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -119,11 +86,12 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     networks:
       - sistema-network
+    profiles:
+      - cloudflared
 
 volumes:
   pgdata:
   public_storage:
-  portainer_data:
 
 networks:
   sistema-network:

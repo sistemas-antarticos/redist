@@ -61,7 +61,7 @@ services:
   # 3. Player (Nginx PWA)
   # =================================================================
   player:
-    image: ghcr.io/sistemas-antarticos/player:1.0.8
+    image: ghcr.io/sistemas-antarticos/player:1.0.9
     container_name: nginx_player
     restart: always
     networks:

@@ -26,7 +26,7 @@ services:
   # 2. Manager (Laravel / Apache)
   # =================================================================
   app:
-    image: ghcr.io/sistemas-antarticos/manager:1.0.7
+    image: ghcr.io/sistemas-antarticos/manager:1.0.8
     container_name: laravel_app
     restart: always
     volumes:

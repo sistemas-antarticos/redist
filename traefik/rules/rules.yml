@@ -1,0 +1,46 @@
+http:
+  routers:
+    manager:
+      rule: "Host(`manager.casperico.com`)"
+      entrypoints:
+        - web
+      service: manager_service
+
+    player:
+      rule: "Host(`monitor.casperico.com`)"
+      entrypoints:
+        - web
+      service: player_service
+
+    portainer:
+      rule: "Host(`docker.casperico.com`)"
+      entrypoints:
+        - web
+      service: portainer_service
+
+    dns:
+      rule: "Host(`dns.casperico.com`)"
+      entrypoints:
+        - web
+      service: dns_service
+
+  services:
+    manager_service:
+      loadBalancer:
+        servers:
+          - url: "http://laravel_app:80"
+
+    player_service:
+      loadBalancer:
+        servers:
+          - url: "http://nginx_player:80"
+
+    portainer_service:
+      loadBalancer:
+        servers:
+          - url: "http://portainer:9000"
+
+    dns_service:
+      loadBalancer:
+        servers:
+          - url: "http://technitium_dns:5380"

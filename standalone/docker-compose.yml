@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # =================================================================
+  # 1. Manager (Laravel / Apache)
+  # =================================================================
+  app:
+    image: ghcr.io/sistemas-antarticos/manager:1.0.11
+    container_name: laravel_app_standalone
+    restart: always
+    ports:
+      - "8001:80"  # Expuesto en el puerto 8001 del host para el proxy inverso
+    volumes:
+      - public_storage:/var/www/html/storage/app/public
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:-sistema}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+    depends_on:
+      - db
+    networks:
+      - sistema-network
+
+  # =================================================================
+  # 2. Player (Nginx PWA)
+  # =================================================================
+  player:
+    image: ghcr.io/sistemas-antarticos/player:1.0.9
+    container_name: nginx_player_standalone
+    restart: always
+    ports:
+      - "8002:80"  # Expuesto en el puerto 8002 del host para el proxy inverso
+    networks:
+      - sistema-network
+
+  # =================================================================
+  # 3. Database (Postgres)
+  # =================================================================
+  db:
+    image: postgres:16
+    container_name: postgres_db_standalone
+    restart: always
+    ports:
+      - "5432:5432"  
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-sistema}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - sistema-network
+
+volumes:
+  pgdata:
+  public_storage:
+
+networks:
+  sistema-network:
+    name: sistema-network-standalone
+    driver: bridge

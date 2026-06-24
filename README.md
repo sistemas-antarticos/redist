@@ -15,3 +15,4 @@ Es importante mencionar que este proyecto está compuesto por múltiples reposit
 Principalmente incluye configuraciones clave para la orquestación y el despliegue de los servicios:
 - **core**: Archivos base y de configuración (`docker-compose.yml`, entornos de ejemplo) para levantar los servicios principales del sistema.
 - **portainer**: Configuración para desplegar Portainer, lo que facilita la gestión visual y administración de los contenedores de Docker utilizados a lo largo del proyecto.
+- **docs**: Carpeta destinada a alojar las versiones compiladas (PDF) de los manuales y especificaciones del sistema, listos para su distribución final.

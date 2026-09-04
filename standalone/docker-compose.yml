@@ -5,7 +5,7 @@ services:
   # 1. Manager (Laravel / Apache)
   # =================================================================
   app:
-    image: ghcr.io/sistemas-antarticos/manager:1.0.15
+    image: ghcr.io/sistemas-antarticos/manager:1.0.16
     container_name: laravel_app_standalone
     restart: always
     ports:
@@ -32,7 +32,7 @@ services:
   # 2. Player (Nginx PWA)
   # =================================================================
   player:
-    image: ghcr.io/sistemas-antarticos/player:1.0.11
+    image: ghcr.io/sistemas-antarticos/player:1.0.12
     container_name: nginx_player_standalone
     restart: always
     ports:

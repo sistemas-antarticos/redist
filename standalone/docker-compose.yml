@@ -32,7 +32,7 @@ services:
   # 2. Player (Nginx PWA)
   # =================================================================
   player:
-    image: ghcr.io/sistemas-antarticos/player:1.0.13
+    image: ghcr.io/sistemas-antarticos/player:1.0.14
     container_name: nginx_player_standalone
     restart: always
     ports:

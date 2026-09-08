@@ -1,0 +1,90 @@
+name: antartico-dev
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: antartico_dev
+      POSTGRES_USER: antartico_dev
+      POSTGRES_PASSWORD: antartico_dev
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U antartico_dev -d antartico_dev"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  manager:
+    build:
+      context: .
+      dockerfile: manager.Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      # Clave pública sólo para esta base aislada de desarrollo.
+      APP_KEY: base64:MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: antartico_dev
+      DB_USERNAME: antartico_dev
+      DB_PASSWORD: antartico_dev
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+      PHP_CLI_SERVER_WORKERS: 6
+    volumes:
+      - ../../manager:/app
+      - vendor:/app/vendor
+      - storage:/app/storage
+      - bootstrap-cache:/app/bootstrap/cache
+      - ./start-manager.sh:/dev/start-manager.sh:ro
+    command: [sh, /dev/start-manager.sh]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  manager-vite:
+    image: node:24-alpine
+    working_dir: /app
+    ports:
+      - "127.0.0.1:5173:5173"
+    environment:
+      APP_URL: http://localhost:8000
+      VITE_HMR_HOST: localhost
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ../../manager:/app
+      - manager-node:/app/node_modules
+      - ./manager-vite.config.js:/dev/vite.docker.config.js:ro
+    command: sh -c "npm ci --no-audit --no-fund && npm run dev -- --config /dev/vite.docker.config.js --configLoader runner --host 0.0.0.0 --port 5173 --strictPort"
+
+  player:
+    image: node:24-alpine
+    working_dir: /app
+    ports:
+      - "127.0.0.1:5174:5174"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000/api
+      VITE_PWA_DEV: "false"
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ../../player:/app
+      - player-node:/app/node_modules
+      - player-dev-dist:/app/dev-dist
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile --store-dir /app/node_modules/.pnpm-store && pnpm dev --host 0.0.0.0 --port 5174 --strictPort"
+    depends_on:
+      - manager
+
+volumes:
+  database:
+  vendor:
+  storage:
+  bootstrap-cache:
+  manager-node:
+  player-node:
+  player-dev-dist:
